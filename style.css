@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 10px;
+  width: 90vw;
+  height: 90vh;
+}
+
+#tablePlace {
+  position: relative;
+}
+td {
+  border: 1px solid #000;
+}
+
+#draggable {
+  height: 100px;
+  width: 100px;
+  background-color: red;
+}

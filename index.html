@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form>
+      <input type="number" name="row" id="row" placeholder="строки" />
+      <input type="number" name="col" id="col" placeholder="колонки" />
+      <input type="button" value="create table" onclick="createTable()" />
+    </form>
+    <div id="tablePlace"></div>
+    <div id="draggable" draggable="true">Drag me</div>
+    <script src="script.js"></script>
+  </body>
+</html>
