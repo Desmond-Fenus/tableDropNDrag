@@ -18,8 +18,14 @@ td {
   border: 1px solid #000;
 }
 
-#draggable {
+.draggable {
   height: 100px;
   width: 100px;
   background-color: red;
+}
+
+.components {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
 }

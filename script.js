@@ -32,6 +32,7 @@ class DraggableComponent {
 
 // Массив для хранения созданных ячеек.
 let createdTable = [];
+let draggableComponents = [];
 
 // Генерация таблицы на основе указанных строк и столбцов.
 const createTable = () => {
@@ -92,10 +93,34 @@ const allowDrop = () => {
 // DRAGGABLE LOGIC
 // ============================
 
-const myDraggable = new DraggableComponent(2, 2);
+const draggable1 = new DraggableComponent(1, 2, "draggable1");
+const draggable2 = new DraggableComponent(2, 2, "draggable2");
+const draggable3 = new DraggableComponent(2, 3, "draggable3");
+const draggable4 = new DraggableComponent(2, 4, "draggable4");
+const draggable5 = new DraggableComponent(3, 1, "draggable5");
+const draggable6 = new DraggableComponent(4, 1, "draggable6");
 
-document.getElementById("draggable").addEventListener("dragstart", (event) => {
-  event.dataTransfer.setData("text", JSON.stringify(myDraggable));
+draggableComponents.push(
+  draggable1,
+  draggable2,
+  draggable3,
+  draggable4,
+  draggable5,
+  draggable6
+);
+
+console.log(draggableComponents);
+
+const draggableElements = Array.from(
+  document.getElementsByClassName("draggable")
+);
+
+draggableComponents.forEach((elem) => {
+  const currentElem = document.getElementById(elem.compName);
+  currentElem.addEventListener("dragstart", (event) => {
+    event.dataTransfer.setData("text", JSON.stringify(elem));
+  });
+  currentElem.innerHTML = `высота: ${elem.size[0]}<br>ширина: ${elem.size[1]}`;
 });
 
 // ============================
@@ -168,10 +193,11 @@ const renderTable = (tablePlace, tableData, tableId) => {
 
   tableData.forEach((row) => {
     let tr = document.createElement("tr");
+    tr.style.height = `${100 / tableData.length}%`;
     row.forEach((elem) => {
       let cell = document.createElement("td");
+      cell.style.width = `${100 / row.length}%`;
       cell.setAttribute(Cell.attribute, elem.id);
-      cell.setAttribute("eee", 3);
       tr.appendChild(cell);
     });
     table.appendChild(tr);
@@ -183,5 +209,29 @@ const renderTable = (tablePlace, tableData, tableId) => {
 // mainCell - id главной клетки, которая расширяется, componentData - [], в котором размеры объединяемых клеток
 
 const mergeСells = (mainCell, componentData) => {
-  console.log(mainCell, componentData);
+  const target = document.querySelector(
+    `td[${Cell.attribute}="${mainCell[0]}_${mainCell[1]}"]`
+  );
+
+  target.setAttribute("rowspan", componentData[0]);
+  target.setAttribute("colspan", componentData[1]);
+  target.setAttribute("main", "true");
+
+  for (let i = +mainCell[0]; i < +mainCell[0] + +componentData[0]; i++) {
+    for (let j = +mainCell[1]; j < +mainCell[1] + +componentData[1]; j++) {
+      let chekingElement = document.querySelector(
+        `td[${Cell.attribute}="${i}_${j}"]`
+      );
+
+      if (chekingElement.hasAttribute("main")) {
+        chekingElement.style.width = `${
+          (+componentData[1] / createdTable[0].length) * 100
+        }%`;
+      } else {
+        chekingElement.style.display = "none";
+      }
+    }
+  }
+
+  console.log(target);
 };
