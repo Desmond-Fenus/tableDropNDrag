@@ -26,7 +26,7 @@ class Cell {
 }
 
 class DraggableComponent {
-  constructor(width, height, compName) {
+  constructor(width, height, compName = "mycomponent") {
     this.data = [width, height];
     this.compName = compName;
   }
@@ -90,6 +90,7 @@ const myDraggable = new DraggableComponent(1, 2);
 
 document.getElementById("draggable").addEventListener("dragstart", (event) => {
   event.dataTransfer.setData("text", JSON.stringify(myDraggable));
+  console.log(event.dataTransfer.getData("text"));
 });
 
 // ============================
@@ -106,8 +107,6 @@ let placeComponent = (position, componentData) => {
   } else {
     return alert("не подходящее место для компонента");
   }
-
-  renderComponent(document.getElementById("tablePlace"));
 
   console.log(createdTable);
 };
@@ -151,27 +150,16 @@ let checkCellstoPlaceComponent = (position, componentData) => {
 // ============================
 
 const renderTable = (tablePlace, tableData) => {
-  let tableHTML = "<table id='myTable'><tbody>";
-
+  let tbody = document.createElement("table");
   tableData.forEach((row) => {
-    tableHTML += "<tr>";
-    row.forEach((cell) => {
-      tableHTML += cell.template;
+    let tr = document.createElement("tr");
+    row.forEach((elem) => {
+      let cell = document.createElement("td");
+      cell.innerText = elem.free;
+      tr.appendChild(cell);
     });
-    tableHTML += "</tr>";
+    tbody.appendChild(tr);
   });
 
-  tableHTML += "</tbody></table>";
-
-  tablePlace.innerHTML = tableHTML;
-};
-
-const renderComponent = (renderPlace) => {
-  let comp = document.createElement("div");
-  comp.style.border = "4px solid green";
-  comp.style.position = "absolute";
-  comp.style.top = "0";
-  comp.style.width = "100px";
-  comp.style.height = "100px";
-  renderPlace.appendChild(comp);
+  tablePlace.appendChild(tbody);
 };
