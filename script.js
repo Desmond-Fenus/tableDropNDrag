@@ -4,30 +4,24 @@
 
 // Класс, описывающий отдельную ячейку таблицы.
 class Cell {
+  static attribute = "cell-data-id";
+
   constructor(row = null, column = null) {
     this.id = `${row}_${column}`;
     this.free = true;
     this.insertedComponent = null;
     this.column = column;
     this.row = row;
-    this.template = `<td data-cell-id="${this.id}"></td>`;
+    this.visible = true;
+    this.depended = null;
   }
 
   // Добавление компонента в ячейку (если она свободна).
-  addComponent(comp) {
-    if (this.free === true) {
-      this.insertedComponent = comp;
-      this.free = false;
-    } else {
-      console.error(`клетка занята компоннетом ${this.insertedComponent}`);
-      return;
-    }
-  }
 }
 
 class DraggableComponent {
   constructor(width, height, compName = "mycomponent") {
-    this.data = [width, height];
+    this.size = [width, height];
     this.compName = compName;
   }
 }
@@ -55,6 +49,8 @@ const createTable = () => {
     createdTable.push(row);
   }
 
+  console.log(createdTable);
+
   renderTable(tablePlace, createdTable);
   allowDrop();
   localStorage.setItem("createdTable", JSON.stringify(createdTable));
@@ -74,11 +70,21 @@ const allowDrop = () => {
   table.addEventListener("drop", (event) => {
     event.preventDefault();
 
-    console.log(event.target.getAttribute("data-cell-id"));
-    let dropPosition = event.target.getAttribute("data-cell-id").split("_");
-    let componentData = JSON.parse(event.dataTransfer.getData("text"));
-    console.log(dropPosition, componentData.data);
-    placeComponent(dropPosition, componentData.data);
+    const componentData = JSON.parse(event.dataTransfer.getData("text"));
+    const targetPosition = event.target.getAttribute(Cell.attribute).split("_");
+
+    console.log(componentData);
+
+    if (checkCellstoPlaceComponent(targetPosition, componentData.size)) {
+      placeComponent(
+        targetPosition,
+        componentData.size,
+        componentData.compName
+      );
+      mergeСells(targetPosition, componentData.size);
+    } else {
+      return alert("не подходящее место для компонента");
+    }
   });
 };
 
@@ -86,26 +92,22 @@ const allowDrop = () => {
 // DRAGGABLE LOGIC
 // ============================
 
-const myDraggable = new DraggableComponent(1, 2);
+const myDraggable = new DraggableComponent(2, 2);
 
 document.getElementById("draggable").addEventListener("dragstart", (event) => {
   event.dataTransfer.setData("text", JSON.stringify(myDraggable));
-  console.log(event.dataTransfer.getData("text"));
 });
 
 // ============================
 // DROPPED LOGIC
 // ============================
 
-let placeComponent = (position, componentData) => {
-  if (checkCellstoPlaceComponent(position, componentData)) {
-    for (let i = +position[0]; i < +position[0] + +componentData[0]; i++) {
-      for (let j = +position[1]; j < +position[1] + +componentData[1]; j++) {
-        createdTable[i][j].free = false;
-      }
+const placeComponent = (position, componentData, componentName) => {
+  for (let i = +position[0]; i < +position[0] + +componentData[0]; i++) {
+    for (let j = +position[1]; j < +position[1] + +componentData[1]; j++) {
+      createdTable[i][j].free = false;
+      createdTable[i][j].insertedComponent = componentName;
     }
-  } else {
-    return alert("не подходящее место для компонента");
   }
 
   console.log(createdTable);
@@ -117,7 +119,7 @@ let placeComponent = (position, componentData) => {
 
 // Когда страница загружается, восстанавливаем таблицу из localStorage и устанавливаем обработчики событий.
 document.addEventListener("DOMContentLoaded", () => {
-  let tablePlace = document.getElementById("tablePlace");
+  const tablePlace = document.getElementById("tablePlace");
   createdTable = JSON.parse(localStorage.getItem("createdTable"));
   renderTable(tablePlace, createdTable);
   allowDrop();
@@ -127,16 +129,24 @@ document.addEventListener("DOMContentLoaded", () => {
 // CHECKS FUNCTIONS
 // ============================
 
-let checkCellstoPlaceComponent = (position, componentData) => {
+const checkCellstoPlaceComponent = (targetPosition, componentData) => {
   if (
-    +position[0] + +componentData[0] > createdTable.length ||
-    +position[1] + +componentData[1] > createdTable[0].length
+    +targetPosition[0] + +componentData[0] > createdTable.length ||
+    +targetPosition[1] + +componentData[1] > createdTable[0].length
   ) {
     return false;
   }
 
-  for (let i = +position[0]; i < +position[0] + +componentData[0]; i++) {
-    for (let j = +position[1]; j < +position[1] + +componentData[1]; j++) {
+  for (
+    let i = +targetPosition[0];
+    i < +targetPosition[0] + +componentData[0];
+    i++
+  ) {
+    for (
+      let j = +targetPosition[1];
+      j < +targetPosition[1] + +componentData[1];
+      j++
+    ) {
       if (createdTable[i][j].free === false) {
         return false;
       }
@@ -149,17 +159,29 @@ let checkCellstoPlaceComponent = (position, componentData) => {
 // RENDER FUNCTIONS
 // ============================
 
-const renderTable = (tablePlace, tableData) => {
-  let tbody = document.createElement("table");
+const renderTable = (tablePlace, tableData, tableId) => {
+  tablePlace.innerHTML = "";
+
+  let table = document.createElement("table");
+
+  tableId ? (table.id = tableId) : (table.id = "myTable");
+
   tableData.forEach((row) => {
     let tr = document.createElement("tr");
     row.forEach((elem) => {
       let cell = document.createElement("td");
-      cell.innerText = elem.free;
+      cell.setAttribute(Cell.attribute, elem.id);
+      cell.setAttribute("eee", 3);
       tr.appendChild(cell);
     });
-    tbody.appendChild(tr);
+    table.appendChild(tr);
   });
 
-  tablePlace.appendChild(tbody);
+  tablePlace.appendChild(table);
+};
+
+// mainCell - id главной клетки, которая расширяется, componentData - [], в котором размеры объединяемых клеток
+
+const mergeСells = (mainCell, componentData) => {
+  console.log(mainCell, componentData);
 };
