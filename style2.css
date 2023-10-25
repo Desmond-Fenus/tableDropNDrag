@@ -1,0 +1,16 @@
+table {
+  border-collapse: separate;
+  border-spacing: 10px;
+  width: 90vw;
+  height: 90vh;
+}
+
+td {
+  border: 1px solid #000;
+}
+
+.draggable {
+  height: 30px;
+  width: 100px;
+  background-color: red;
+}

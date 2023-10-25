@@ -12,11 +12,9 @@ class Cell {
     this.insertedComponent = null;
     this.column = column;
     this.row = row;
-    this.visible = true;
+    this.main = false;
     this.depended = null;
   }
-
-  // Добавление компонента в ячейку (если она свободна).
 }
 
 class DraggableComponent {
@@ -187,8 +185,6 @@ const checkCellstoPlaceComponent = (targetPosition, componentData) => {
 // ============================
 
 const renderTable = (tablePlace, tableData, tableId) => {
-  tablePlace.innerHTML = "";
-
   let table = document.createElement("table");
 
   tableId ? (table.id = tableId) : (table.id = "myTable");
@@ -229,11 +225,12 @@ const mergeСells = (mainCell, componentData) => {
         chekingElement.style.width = `${
           (+componentData[1] / createdTable[0].length) * 100
         }%`;
+        createdTable[i][j].main = true;
       } else {
         chekingElement.style.display = "none";
       }
     }
   }
 
-  console.log(target);
+  console.log(createdTable);
 };
