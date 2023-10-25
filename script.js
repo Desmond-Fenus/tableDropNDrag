@@ -109,8 +109,6 @@ draggableComponents.push(
   draggable6
 );
 
-console.log(draggableComponents);
-
 const draggableElements = Array.from(
   document.getElementsByClassName("draggable")
 );
@@ -144,10 +142,14 @@ const placeComponent = (position, componentData, componentName) => {
 
 // Когда страница загружается, восстанавливаем таблицу из localStorage и устанавливаем обработчики событий.
 document.addEventListener("DOMContentLoaded", () => {
-  const tablePlace = document.getElementById("tablePlace");
-  createdTable = JSON.parse(localStorage.getItem("createdTable"));
-  renderTable(tablePlace, createdTable);
-  allowDrop();
+  if (localStorage.getItem("createdTable")) {
+    const tablePlace = document.getElementById("tablePlace");
+    createdTable = JSON.parse(localStorage.getItem("createdTable"));
+    renderTable(tablePlace, createdTable);
+    allowDrop();
+  } else {
+    return;
+  }
 });
 
 // ============================
