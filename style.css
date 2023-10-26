@@ -1,31 +1,42 @@
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 table {
   border-collapse: separate;
   border-spacing: 10px;
-  width: 90vw;
-  height: 90vh;
 }
 
-#tablePlace {
-  position: relative;
+.controlTable_table {
+  background-color: rgb(230, 230, 230);
+  width: 100%;
+  height: 600px;
 }
-td {
-  border: 1px solid #000;
+
+.controlTable_cell {
+  background-color: white;
+  border-radius: 5px;
+
+  text-align: center;
+  font-size: 6rem;
+
+  color: rgb(230, 230, 230);
 }
 
 .draggable {
-  height: 100px;
+  height: 30px;
   width: 100px;
   background-color: red;
 }
 
-.components {
+.listPlace {
+  width: 300px;
+
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 5px;
+}
+
+.itemStyle {
+  background-color: green;
+  flex-grow: 1;
+
+  height: 35px;
 }

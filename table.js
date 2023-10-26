@@ -1,3 +1,5 @@
+// Первый класс для создания template для последующего заполнения таблицы
+
 class ControlTable {
   static attribute = "cell-id-data";
 
@@ -24,6 +26,14 @@ class ControlTable {
     }
   };
 
+  ControlPanel = class {
+    constructor() {
+      this.previousActions = [];
+    }
+
+    cancelAction() {}
+  };
+
   // функция, которая создает экземпляр данных клетки
 
   #addNewCell(elemRowNumber, elemColNumber, tableName) {
@@ -44,13 +54,16 @@ class ControlTable {
 
   #renderTable() {
     let table = document.createElement("table");
+    table.classList.add(`${this.tableName}_table`);
 
     this.renderedTableData.forEach((row) => {
       let tr = document.createElement("tr");
       tr.style.height = `${100 / this.renderedTableData.length}%`;
       row.forEach((elem) => {
         let td = document.createElement("td");
+        td.classList.add(`${this.tableName}_cell`);
         td.style.width = `${100 / row.length}%`;
+        td.innerText = "+";
         td.setAttribute(ControlTable.attribute, elem.cellId);
         tr.appendChild(td);
       });
