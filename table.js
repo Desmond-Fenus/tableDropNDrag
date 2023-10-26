@@ -67,9 +67,10 @@ class ControlTable {
       event.preventDefault();
 
       // в ComponentData должно содержаться размер с названием size, название компонента compName
-      // TODO поменять после добавления класса драгблКомп следующую строчку: JSON.parse(event.dataTransfer.getData("text"))
-
-      const componentData = [2, 2];
+      const componentData = event.dataTransfer
+        .getData("text")
+        .split("_")
+        .map(Number);
 
       // в targetPosition мы определяем массив с координатами реальной клетки на таблице на которую мы бросили компонент с componentData
       const targetPosition = event.target
@@ -158,13 +159,51 @@ class ControlTable {
 // TODO добавить к ним размер компонента и название к которому можно будет привязать компонент вью
 
 class DraggableList {
-  constructor() {}
+  constructor(listName, listPlace = "draggableList") {
+    this.listName = listName;
+    this.listPlace = document.getElementById(listPlace);
+    this.catalogOfItems = [];
+  }
+
+  #ListItem = class {
+    constructor(itemName, height, width) {
+      this.itemName = itemName;
+      this.height = height;
+      this.width = width;
+    }
+  };
+
+  addNewItem(itemName, height, width) {
+    this.catalogOfItems.push(new this.#ListItem(itemName, height, width));
+
+    let listItem = document.createElement("div");
+    listItem.draggable = true;
+    listItem.addEventListener("dragstart", (event) => {
+      event.dataTransfer.setData("text", `${height}_${width}`);
+      console.log(event.dataTransfer.getData("text"));
+    });
+    listItem.innerText = `${itemName}, ${height}, ${width}`;
+    listItem.classList.add("itemStyle");
+
+    this.listPlace.appendChild(listItem);
+  }
+
+  addNewItems(arr) {
+    arr.forEach((elem) => {
+      this.addNewItem(...elem);
+    });
+  }
 }
 
 const controlTable = new ControlTable(5, 7);
-
 controlTable.createNewTable();
-console.log(controlTable.renderedTableData);
 
-const newTable = new ControlTable(3, 3, "newTable");
-newTable.createNewTable();
+const newList = new DraggableList("first list");
+newList.addNewItem("1", 2, 2);
+
+const arr = [
+  ["q", 2, 4],
+  ["w", 3, 1],
+  ["t", 1, 4],
+];
+newList.addNewItems(arr);
